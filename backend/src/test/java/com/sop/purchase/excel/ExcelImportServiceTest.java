@@ -78,12 +78,12 @@ class ExcelImportServiceTest {
 
     private ByteArrayInputStream workbook(String[] rowValues) {
         try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-            var sheet = workbook.createSheet("Products");
+            var sheet = workbook.createSheet("商品");
             Row header = sheet.createRow(0);
-            header.createCell(0).setCellValue("Product Code");
-            header.createCell(1).setCellValue("Product Name");
-            header.createCell(2).setCellValue("Quantity");
-            header.createCell(3).setCellValue("Remark");
+            header.createCell(0).setCellValue("商品编码");
+            header.createCell(1).setCellValue("商品名称");
+            header.createCell(2).setCellValue("数量");
+            header.createCell(3).setCellValue("备注");
             Row row = sheet.createRow(1);
             for (int i = 0; i < rowValues.length; i++) {
                 row.createCell(i).setCellValue(rowValues[i]);

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ExcelExportService {
+    private static final String[] PRODUCT_HEADERS = {"商品编码", "商品名称", "数量", "备注"};
     private final PurchaseListService purchaseListService;
 
     public ExcelExportService(PurchaseListService purchaseListService) {
@@ -20,22 +21,22 @@ public class ExcelExportService {
     public byte[] exportPurchaseList(Long id) {
         PurchaseListResponse detail = purchaseListService.detail(id);
         try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-            var itemSheet = workbook.createSheet("Support Items");
+            var itemSheet = workbook.createSheet("配套商品");
             Row itemHeader = itemSheet.createRow(0);
-            writeCells(itemHeader, "Code", "Name", "Unit", "Quantity", "Actual Price", "Amount");
+            writeCells(itemHeader, "配套商品编码", "配套商品名称", "单位", "数量", "实际单价", "金额");
             for (int i = 0; i < detail.items().size(); i++) {
                 var item = detail.items().get(i);
                 writeCells(itemSheet.createRow(i + 1), item.supportItemCode(), item.supportItemName(), item.unit(),
                         item.quantity().toPlainString(), item.actualUnitPrice().toPlainString(), item.amount().toPlainString());
             }
 
-            var productSheet = workbook.createSheet("Products");
+            var productSheet = workbook.createSheet("商品");
             Row productHeader = productSheet.createRow(0);
-            writeCells(productHeader, "Code", "Name", "Unit", "Quantity", "Remark");
+            writeCells(productHeader, PRODUCT_HEADERS);
             for (int i = 0; i < detail.products().size(); i++) {
                 var product = detail.products().get(i);
                 writeCells(productSheet.createRow(i + 1), product.productCode(), product.productName(),
-                        product.unit(), product.quantity().toPlainString(), product.remark());
+                        product.quantity().toPlainString(), product.remark());
             }
 
             workbook.write(out);
@@ -47,8 +48,8 @@ public class ExcelExportService {
 
     public byte[] template() {
         try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-            var sheet = workbook.createSheet("Products");
-            writeCells(sheet.createRow(0), "Product Code", "Product Name", "Quantity", "Remark");
+            var sheet = workbook.createSheet("商品");
+            writeCells(sheet.createRow(0), PRODUCT_HEADERS);
             workbook.write(out);
             return out.toByteArray();
         } catch (IOException ex) {
