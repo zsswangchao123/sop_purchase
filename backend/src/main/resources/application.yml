@@ -1,0 +1,16 @@
+server:
+  port: 8080
+
+spring:
+
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/sop_purchase?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
