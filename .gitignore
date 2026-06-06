@@ -11,5 +11,6 @@ backend/.idea/
 .env
 .env.*
 !.env.example
+deploy/*.tar
 .DS_Store
 Thumbs.db

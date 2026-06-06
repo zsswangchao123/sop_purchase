@@ -32,3 +32,22 @@ npm run dev
 ```
 
 访问 `http://localhost:5173`。
+
+## Docker 部署
+
+先完成后端和前端构建：
+
+```powershell
+mvn -f backend/pom.xml clean package
+cd frontend
+npm ci
+npm run build
+```
+
+在 `deploy` 目录创建 `.env`，参考 `deploy/.env.example` 配置独立数据库密码，然后运行：
+
+```bash
+docker compose up -d --build
+```
+
+默认通过服务器的 `8088` 端口访问。

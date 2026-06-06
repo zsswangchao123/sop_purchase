@@ -1,0 +1,52 @@
+services:
+  database:
+    image: mysql:5.7
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: sop_purchase
+      MYSQL_USER: sop_purchase
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      TZ: Asia/Shanghai
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  backend:
+    image: sop-purchase-backend:0.1.0
+    build:
+      context: ..
+      dockerfile: deploy/backend.Dockerfile
+    restart: unless-stopped
+    security_opt:
+      - seccomp=unconfined
+    environment:
+      DB_URL: jdbc:mysql://database:3306/sop_purchase?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+      DB_USERNAME: sop_purchase
+      DB_PASSWORD: ${DB_PASSWORD}
+      JAVA_TOOL_OPTIONS: -XX:+UseSerialGC -XX:ActiveProcessorCount=2 -Xms128m -Xmx512m
+      TZ: Asia/Shanghai
+    depends_on:
+      database:
+        condition: service_healthy
+
+  web:
+    image: sop-purchase-web:0.1.0
+    build:
+      context: ..
+      dockerfile: deploy/frontend.Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8088:80"
+    depends_on:
+      - backend
+
+volumes:
+  mysql-data:
